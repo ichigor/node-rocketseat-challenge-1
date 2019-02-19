@@ -14,9 +14,7 @@ app.set('view engine', 'njk')
 app.use(express.urlencoded({ extended: false }))
 
 const queryMiddleware = (req, res, next) => {
-  // req.query.age === undefined ? res.redirect('/') : next()
-  // console.log(req.body)
-  next()
+  req.query.age === undefined ? res.redirect('/') : next()
 }
 
 app.get('/', (req, res) => {
@@ -24,15 +22,17 @@ app.get('/', (req, res) => {
 })
 
 app.get('/major', queryMiddleware, (req, res) => {
-  return res.render('major')
+  return res.render('major', { age: req.query.age })
 })
 
 app.get('/minor', queryMiddleware, (req, res) => {
-  return res.render('minor')
+  return res.render('minor', { age: req.query.age })
 })
 
-app.post('/check', (req, res) => {
-  req.body.age >= 18 ? res.redirect('/major') : res.redirect('/minor')
+app.get('/check', (req, res) => {
+  return req.query.age >= 18
+    ? res.redirect(`/major?age=${req.query.age}`)
+    : res.redirect(`/minor?age=${req.query.age}`)
 })
 
 app.listen(3000, () => {
